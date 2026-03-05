@@ -11,8 +11,7 @@ from config import CASCADE
 
 # 全局初始化匹配器
 matcher = CascadedMatcher(prefer_deep=True)
-# 强制使用90%的判定标准 (与最近的代码改动保持一致)
-matcher.cfg['match_decision_threshold'] = 0.90
+# 自动通过引入 config 里面的 CASCADE 得到最新的阈值
 
 def process_fingerprints(img1_path, img2_path):
     if not img1_path or not img2_path:
