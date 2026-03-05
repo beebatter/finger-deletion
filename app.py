@@ -66,12 +66,12 @@ with gr.Blocks(title="指纹智能比对系统") as demo:
     
     with gr.Row():
         with gr.Column():
-            img1 = gr.Image(type="filepath", label="上传 第一张 指纹")
-            out_img1 = gr.Image(label="第一张指纹 细节点提取可视化")
+            img1 = gr.Image(type="filepath", label="上传 第一张 指纹", height=400)
+            out_img1 = gr.Image(label="第一张指纹 细节点提取可视化", height=400)
             
         with gr.Column():
-            img2 = gr.Image(type="filepath", label="上传 第二张 指纹")
-            out_img2 = gr.Image(label="第二张指纹 细节点提取可视化")
+            img2 = gr.Image(type="filepath", label="上传 第二张 指纹", height=400)
+            out_img2 = gr.Image(label="第二张指纹 细节点提取可视化", height=400)
             
     with gr.Row():
         btn = gr.Button("🚀 开始比对", variant="primary", size="lg")
