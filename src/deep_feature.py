@@ -87,6 +87,14 @@ class DeepFeatureExtractor:
             _torch.nn.BatchNorm1d(embed_dim),
         )
 
+        # 【新增】：加载指纹特征微调权重（如有）
+        custom_weights = self.cfg.get("custom_weights_path")
+        if custom_weights and os.path.exists(custom_weights):
+            print(f"[DeepFeature] 加载指纹特征微调模型: {custom_weights}")
+            model.load_state_dict(_torch.load(custom_weights, map_location=self.device))
+        else:
+            print(f"[DeepFeature] 未找到微调权重，使用ImageNet预训练参数提取粗特征")
+
         model = model.to(self.device)
         model.eval()
         return model
@@ -117,12 +125,16 @@ class DeepFeatureExtractor:
         Returns:
             归一化后的特征向量 (embedding_dim,)
         """
-        img = cv2.imread(image_path)
+        img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         if img is None:
             raise ValueError(f"无法读取图像: {image_path}")
 
+        # --- 加入同训练高度一致的物理预处理（CLAHE增强脊线） ---
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+        img = clahe.apply(img)
+        
         # 转为 RGB
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
 
         # 应用变换
         tensor = self.transform(img).unsqueeze(0).to(self.device)

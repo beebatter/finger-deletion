@@ -153,6 +153,10 @@ class CascadedMatcher:
         final_score = (self.cfg["deep_weight"] * deep_score +
                        self.cfg["minutiae_weight"] * minutiae_score)
         result["final_score"] = min(final_score, 1.0)
+        
+        # 1:1 匹配判定（是否为同一指纹）
+        decision_thresh = self.cfg.get("match_decision_threshold", 0.55)
+        result["is_match"] = bool(result["final_score"] >= decision_thresh)
 
         result["time_ms"] = (time.time() - start_time) * 1000
 
@@ -160,6 +164,7 @@ class CascadedMatcher:
             print(f"  [最终分数] {result['final_score']:.4f} "
                   f"(深度: {deep_score:.3f} × {self.cfg['deep_weight']} + "
                   f"细节点: {minutiae_score:.3f} × {self.cfg['minutiae_weight']})")
+            print(f"  [判定结果] {'匹配成功 ✅' if result['is_match'] else '匹配失败 ❌'} (阈值: {decision_thresh})")
 
         return result
 

@@ -93,6 +93,8 @@ MINUTIAE_MATCH = {
 DEEP_FEATURE = {
     # 使用的预训练模型
     "model_name": "resnet18",  # resnet18, resnet50, mobilenet_v2
+    # 微调后的模型权重路径（如果存在则加载，用于提取指纹专用鲁棒特征）
+    "custom_weights_path": os.path.join(MODEL_DIR, "best_fingerprint_model.pth"),
     # 特征向量维度（模型输出后降维）
     "embedding_dim": 256,
     # 输入图像尺寸（适配模型）
@@ -107,13 +109,16 @@ DEEP_FEATURE = {
 # 级联匹配参数
 # ============================================================
 CASCADE = {
-    # 第一阶段：深度学习初筛阈值（低阈值 -> 高召回率）
-    "stage1_threshold": 0.3,
+    # 第一阶段：深度学习初筛阈值（提取指纹特征后可适当提高，如设为0.4-0.5）
+    "stage1_threshold": 0.4,
     # 第二阶段：细节点精确匹配阈值（高阈值 -> 高精度）
     "stage2_threshold": 0.4,
     # 最终相似度融合权重
     "deep_weight": 0.4,      # 深度学习分数权重
     "minutiae_weight": 0.6,  # 细节点分数权重
+    
+    # 【重构：常规识别设定】1:1判定最终得分阈值（设为90%，超过此分则判定为同一枚指纹）
+    "match_decision_threshold": 0.90, 
 }
 
 # ============================================================
