@@ -29,6 +29,7 @@
 finger-deletion/
 ├── app.py                       # ✨ Web UI 图形化界面 (基于 Gradio)
 ├── recognize.py                 # ✨ CLI 端到端单对指纹识别脚本
+├── eval_socofing.py             # ✨ 自动化系统性能评测脚本 (一键计算 TPR/FAR)
 ├── train.py                     # 模型核心训练脚本 (提供完整的对比学习训练环)
 ├── download_and_setup.py        # 训练数据集(SOCOFing)拉取与配置
 ├── config.py                    # 全局配置中心（权重、判定阈值、特征参数等）
@@ -57,6 +58,14 @@ python app.py
 ```
 > 服务器运行后，通过浏览器访问 `http://127.0.0.1:7860`（若在云端可使用VSCode自动端口转发）。
 
+**💥 关闭后台 Web 服务（杀进程技巧）**
+如果您修改了配置文件需要重启，或遇到端口被占用(`Cannot find empty port`)导致启动失败，请打开终端运行以下任意一条命令强制释放进程：
+```bash
+fuser -k 7860/tcp
+# 或者（如果 fuser 查不到）：
+ps aux | grep "[p]ython app.py" | awk '{print $2}' | xargs -r kill -9
+```
+
 ### 3. 命令行 1:1 指纹比对
 无需开启界面，直接在终端中获取两张指纹的判定结果和相似度分布：
 ```bash
@@ -74,6 +83,13 @@ python download_and_setup.py
 
 # 启动训练
 python train.py
+```
+
+### 5. 自动化系统级安全评测
+系统集成了对真实开源残缺数据库的大规模验证流，通过快速交叉匹配正、负样本，一键输出 **综合准确率**、**TPR (合法识别率)** 与核心的 **FAR (防伪造被骗率)** 报告：
+```bash
+# 交叉抽取 100 对残缺与伪造指纹自动计算表现：
+python eval_socofing.py --samples 100
 ```
 
 ## 关键配置 (`config.py`)
